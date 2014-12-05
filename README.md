@@ -15,16 +15,26 @@ RoboZZle textual language
 =========================
 
 ```
-PROG ::= SUB | SUB PROG
+PROG ::= FUN
+       | FUN PROG
 
-SUB ::= 'sub' 'F'int ':' '\n' INSTRS
+FUN ::= 'F'int ':' '\n' INSTRS
 
-INSTRS ::= <empty> | INSTR '\n' INSTRS
+INSTRS ::= <empty>
+         | INSTR '\n' INSTRS
 
 INSTR ::= ACTION
         | ACTION 'if' CONDITION
 
-ACTION ::= 'move' | 'left' | 'right' | 'call' 'F'int
+ACTION ::= 'move'
+         | 'left'
+         | 'right'
+         | 'paint' COLOR
+         | 'call' 'F'int
 
-CONDITION ::= 'blue' | 'green' | 'red'
+CONDITION ::= COLOR
+
+COLOR ::= 'blue'
+        | 'green'
+        | 'red'
 ```
