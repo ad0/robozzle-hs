@@ -2,3 +2,4 @@ dist
 Setup.hs
 puzzles
 solutions
+*.swp
