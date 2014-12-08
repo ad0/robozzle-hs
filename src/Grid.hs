@@ -7,8 +7,13 @@ data Direction = DirUp | DirDown | DirLeft | DirRight
 data Position = Pos { posX :: Int, posY :: Int }
                 deriving (Show)
 
-data Color = Blue | Red | Green
+data Color = Blue | Green | Red
              deriving (Eq)
+
+instance Show Color where
+  show Blue  = "blue"
+  show Green = "green"
+  show Red   = "red"
 
 data Cell = None
           | Simple Color
@@ -33,6 +38,11 @@ red = Simple Red
 
 green :: Cell
 green = Simple Green
+
+getHtmlColor :: Cell -> String
+getHtmlColor None         = "black"
+getHtmlColor (Simple col) = show col
+getHtmlColor (StarOn col) = show col
 
 game1 :: Game
 game1 = Game grid 16 12 (Pos 7 6) DirRight 1

@@ -3,37 +3,30 @@ module Engine where
 import Grid
 import Language
 
-import Control.Monad.State
 import Control.Monad.Reader
-import Debug.Trace
 
-type RoboM a = ReaderT Prog (State [Instr]) a
+--type RoboM a = ReaderT Prog (State [Instr]) a
 
-runRobo :: RoboM a -> Prog -> a
-runRobo m prog = evalState (runReaderT m prog) $ head prog
+--runRobo :: RoboM a -> Prog -> a
+--runRobo m prog = evalState (runReaderT m prog) $ head prog
 
-step :: Game -> RoboM Game
-step game = do
-  traceM $ "[" ++ show (gameNbStars game) ++ "]"
-  traceM $ showGame game
-  Instr cond act : instrs <- get
-  put instrs
+step :: Game -> [Instr] -> Reader Prog (Game, [Instr])
+step game instrs = do
+  let (Instr cond act : instrs') = instrs
   let color = case getCurrentCell game of
                 Simple c -> c
                 _        -> error "error"
   case cond of
-    Always  -> doAction game act
-    If col  -> if color == col then doAction game act else return game
-  where doAction g act =
+    Always  -> doAction game instrs' act
+    If col  -> if color == col then doAction game instrs' act else return (game, instrs')
+  where doAction g i act =
           case act of
-            TurnLeft  -> return $ g { gameDir = turnLeft (gameDir g) }
-            TurnRight -> return $ g { gameDir = turnRight (gameDir g) }
-            GoForward -> return $ goForward g
-            CallF i   -> do
+            TurnLeft  -> return (g { gameDir = turnLeft (gameDir g) }, i)
+            TurnRight -> return (g { gameDir = turnRight (gameDir g) }, i)
+            GoForward -> return (goForward g, i)
+            CallF n   -> do
                            prog   <- ask
-                           instrs <- get
-                           put $ (prog !! (i-1)) ++ instrs
-                           return g
+                           return (g, (prog !! (n-1)) ++ i)
 
 turnLeft :: Direction -> Direction
 turnLeft DirUp    = DirLeft
